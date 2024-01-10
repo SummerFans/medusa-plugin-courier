@@ -1,7 +1,7 @@
 {
-  "name": "medusa-plugin-notification",
+  "name": "medusa-plugin-courier",
   "version": "0.0.1",
-  "description": " Medusa Plugin Notification",
+  "description": " Medusa Plugin Courier Notification",
   "author": "summerfans",
   "main": "dist/index.js",
   "license": "MIT",
