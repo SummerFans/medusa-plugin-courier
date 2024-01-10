@@ -10,7 +10,7 @@ import {
     GiftCardService,
     SwapService
   } from "@medusajs/medusa";
-  import { PROVIDER_ID } from "../constants"
+  import { PROVIDER_ID } from "../types"
   
   export default async (
     container: MedusaContainer,
