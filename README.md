@@ -6,11 +6,21 @@
     <img alt="Medusa logo" src="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4970-8a1f-c6af37f087bf.svg">
     </picture>
   </a>
+    <a href="https://www.courier.com">
+    <picture>
+      <img alt="Medusa logo" width="55" src="https://www.courier.com/_next/image/?url=https%3A%2F%2Fimages.ctfassets.net%2Fz7iqk1q8njt4%2F2d8018KcJbixqrzcoxUBWH%2F0f125c6776574f684ab71031c458a76a%2FCourier_circle.png&w=828&q=100">
+      </picture>
+  </a>
 </p>
 <h1 align="center">
-  Medusa Plugin Notification
+  Medusa Plugin Courier Notification
 </h1>
 
 <p align="center">
   Medusa notification plugin template provided
 </p>
+
+## ENV
+```
+AUTH_TOKEN={AUTH_TOKEN}
+```

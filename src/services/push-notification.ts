@@ -3,6 +3,8 @@ import {
   AbstractNotificationService,
 } from "@medusajs/medusa";
 import { EntityManager } from "typeorm";
+import { CourierClient } from "@trycourier/courier";
+
 import {
   PROVIDER_ID,
   InjectedDependencies,
@@ -23,7 +25,7 @@ class EventBusProvider {
   protected logger_: Logger;
   protected options_: any;
 
-  // protected client_: any
+  protected courierClient_: CourierClient
 
   constructor(container: InjectedDependencies, options: any) {
     this.container_ = container;
@@ -31,7 +33,12 @@ class EventBusProvider {
     this.options_ = options;
 
     // building a provider SDK
-    // SendGrid.setApiKey(options.api_key)
+    if (!options.auth_token) {
+      // AUTH_TOKEN
+      new Error("Courier plugin AUTH_TOKEN is required");
+    }
+    this.courierClient_ = new CourierClient({ authorizationToken: options.AUTH_TOKEN }); // get from the Courier UI
+
   }
 
   registerToEventBus(eventName: string, eventHandle: EventBusFunction): void {
@@ -46,10 +53,35 @@ class EventBusProvider {
 
   async eventHandle(eventName: string, data: any): Promise<EventBusResponse> {
     return this.eventBus_.has(eventName)
-      ? this.eventBus_.get(eventName)(this.container_, data)
+      ? this.eventBus_.get(eventName)(this.container_, data, this.courierClient_)
       : null;
   }
+
+  async resendEventHandle(to: string, data:any): Promise<EventBusResponse> {
+
+    this.courierClient_.send({
+      message: {
+        to: {
+          data: data,
+          email: to,
+        },
+        content: data.content,
+        routing: {
+          method: "single",
+          channels: ["email"],
+        },
+      },
+    })
+    
+    return {
+      to: to,
+      status: "done",
+      data: data, // make changes to the data
+    };
+  }
+
 }
+
 
 class PushNotificationService extends AbstractNotificationService {
   protected manager_: EntityManager;
@@ -66,8 +98,11 @@ class PushNotificationService extends AbstractNotificationService {
     this.logger_ = container.logger;
     this.options_ = options;
 
+    this.eventBusProvider = new EventBusProvider(container, options);
+
     // TODO: add oreder event bus
     for (const [eventName, handle] of Object.entries(orderEventBus) as [string, EventBusFunction][]) {
+
       this.eventBusProvider.registerToEventBus(
         eventName,
         handle
@@ -107,15 +142,7 @@ class PushNotificationService extends AbstractNotificationService {
     // check if the receiver should be changed
     const to: string = config.to ? config.to : notification.to;
 
-    // TODO resend the notification using the same data
-    // that is saved under notification.data
-    // return this.eventBusProvider.eventHandle(event, data);
-
-    return {
-      to,
-      status: "done",
-      data: notification.data, // make changes to the data
-    };
+    return await this.eventBusProvider.resendEventHandle(to, notification.data);
   }
 }
 

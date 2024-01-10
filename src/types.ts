@@ -1,4 +1,5 @@
 import { Logger, OrderService, CustomerService } from "@medusajs/medusa";
+import { CourierClient } from "@trycourier/courier";
 
 const PROVIDER_ID = "push-notification";
 
@@ -11,7 +12,8 @@ type InjectedDependencies = {
 
 type EventBusFunction = (
   container: InjectedDependencies,
-  data: any
+  data: any,
+  client?: CourierClient
 ) => Promise<{}>;
 type EventBusResponse = {
   to: string;
