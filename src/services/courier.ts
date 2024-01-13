@@ -1,33 +1,30 @@
-import {
-  Logger,
-  AbstractNotificationService,
-} from "@medusajs/medusa";
+import { Logger, AbstractNotificationService } from "@medusajs/medusa";
 import { EntityManager } from "typeorm";
 import { CourierClient } from "@trycourier/courier";
 
-import {
-  PROVIDER_ID,
-  InjectedDependencies,
-  EventBusResponse,
-  EventBusFunction,
-} from "../types";
+import { PROVIDER_ID, EventBusResponse, EventBusFunction, TemplateFunction } from "../types";
 
-// import SendGrid from "@sendgrid/mail"
+// TemplateLocale
+import orderTemplates from "../templates/order";
+import customerTemplates from "../templates/customer";
 
-
+// EventBus
 import orderEventBus from "../handle/order";
 import customerEventBus from "../handle/customer";
 
+
+
 class EventBusProvider {
   private eventBus_: Map<string, Function> = new Map();
+  private templates_: Map<string, Function> = new Map();
 
-  protected container_: InjectedDependencies;
+  protected container_;
   protected logger_: Logger;
   protected options_: any;
 
-  protected courierClient_: CourierClient
+  protected courierClient_: CourierClient;
 
-  constructor(container: InjectedDependencies, options: any) {
+  constructor(container, options: any) {
     this.container_ = container;
     this.logger_ = container.logger;
     this.options_ = options;
@@ -37,8 +34,9 @@ class EventBusProvider {
       // AUTH_TOKEN
       new Error("Courier plugin AUTH_TOKEN is required");
     }
-    this.courierClient_ = new CourierClient({ authorizationToken: options.AUTH_TOKEN }); // get from the Courier UI
-
+    this.courierClient_ = new CourierClient({
+      authorizationToken: options.AUTH_TOKEN,
+    }); // get from the Courier UI
   }
 
   registerToEventBus(eventName: string, eventHandle: EventBusFunction): void {
@@ -51,14 +49,25 @@ class EventBusProvider {
     this.eventBus_.set(eventName, eventHandle);
   }
 
+  registerToTemplate(eventName: string, templateHandle: TemplateFunction) {
+    return this.templates_.set(eventName, templateHandle);
+  }
+
+  // TODO: add event handle
   async eventHandle(eventName: string, data: any): Promise<EventBusResponse> {
     return this.eventBus_.has(eventName)
-      ? this.eventBus_.get(eventName)(this.container_, data, this.courierClient_)
+      ? this.eventBus_.get(eventName)(
+          this.container_,
+          data,
+          this.courierClient_,
+          this.options_,
+          this.templates_.get(eventName)
+        )
       : null;
   }
 
-  async resendEventHandle(to: string, data:any): Promise<EventBusResponse> {
-
+  // TODO: resend event handle
+  async resendEventHandle(to: string, data: any): Promise<EventBusResponse> {
     this.courierClient_.send({
       message: {
         to: {
@@ -71,17 +80,15 @@ class EventBusProvider {
           channels: ["email"],
         },
       },
-    })
-    
+    });
+
     return {
       to: to,
       status: "done",
       data: data, // make changes to the data
     };
   }
-
 }
-
 
 class PushNotificationService extends AbstractNotificationService {
   protected manager_: EntityManager;
@@ -93,35 +100,36 @@ class PushNotificationService extends AbstractNotificationService {
   protected options_: any;
   protected eventBusProvider: EventBusProvider;
 
-  constructor(container: InjectedDependencies, options) {
+  constructor(container, options) {
     super(container);
     this.logger_ = container.logger;
     this.options_ = options;
 
-    this.eventBusProvider = new EventBusProvider(container, options);
+    this.eventBusProvider = new EventBusProvider(container, this.options_);
 
     // TODO: add oreder event bus
-    for (const [eventName, handle] of Object.entries(orderEventBus) as [string, EventBusFunction][]) {
-
-      this.eventBusProvider.registerToEventBus(
-        eventName,
-        handle
-      );
+    for (const [eventName, handle] of Object.entries(orderEventBus) as [
+      string,
+      EventBusFunction
+    ][]) {
+      // order event
+      this.eventBusProvider.registerToEventBus(eventName, handle);                    // register event handle
+      this.eventBusProvider.registerToTemplate(eventName, orderTemplates[eventName]); // register default template
     }
 
     // TODO: add customer event bus
-    for (const [eventName, handle] of Object.entries(customerEventBus) as [string, EventBusFunction][]) {
-      this.eventBusProvider.registerToEventBus(
-        eventName,
-        handle
-      );
+    for (const [eventName, handle] of Object.entries(customerEventBus) as [
+      string,
+      EventBusFunction
+    ][]) {
+      this.eventBusProvider.registerToEventBus(eventName, handle);                    // register event handle
+      this.eventBusProvider.registerToTemplate(eventName, customerTemplates[eventName]); // register default template
     }
   }
 
   async sendNotification(
     event: string,
-    data: any,
-    _: unknown //attachmentGenerator
+    data: any
   ): Promise<{
     to: string;
     status: string;

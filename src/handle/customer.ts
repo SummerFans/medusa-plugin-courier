@@ -1,18 +1,21 @@
 import { Customer, CustomerService } from "@medusajs/medusa";
-import { InjectedDependencies, EventBusResponse } from "../types";
+import { EventBusResponse } from "../types";
 import { CourierClient } from "@trycourier/courier";
 
 const customerEventBus = {};
 
 // Customer Created Handle
 customerEventBus[CustomerService.Events.CREATED] = async function customerCreatedHandle(
-  { logger, customerService }: InjectedDependencies,
+  { logger, customerService },
   data: any,
   client: CourierClient
 ): Promise<EventBusResponse> {
   let customer: Customer;
   let template_data: any = {};
   try {
+
+    logger.debug("Customer created event, CustomerId:" + data.id);
+
     customer = (await customerService.retrieve(data.id)) as Customer;
 
     template_data.content = {

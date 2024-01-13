@@ -24,3 +24,30 @@
 ```
 AUTH_TOKEN={AUTH_TOKEN}
 ```
+
+medusa-config.js
+```
+{
+    resolve: "medusa-plugin-courier",
+    options: {
+        auth_token: "xxxxx",
+        template: {
+            "order.created": {
+                "en-US": "xxxxx",
+                "zh-CN": "xxxxx",
+                "de-DE": "xxxxx"
+            }
+        }
+}
+```
+OR
+```
+{
+    resolve: "medusa-plugin-courier",
+    options: {
+        auth_token: "xxxxx",
+        template: {
+            "order.created": "xxx"
+        }
+}
+```

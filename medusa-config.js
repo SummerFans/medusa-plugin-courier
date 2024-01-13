@@ -13,7 +13,7 @@ switch (process.env.NODE_ENV) {
     break;
   case "development":
   default:
-    ENV_FILE_NAME = ".env";
+    ENV_FILE_NAME = ".env.local";
     break;
 }
 
@@ -40,6 +40,14 @@ const plugins = [
     resolve: `@medusajs/file-local`,
     options: {
       upload_dir: "uploads",
+    },
+  },
+  {
+    resolve: `medusa-payment-stripe`,
+    options: {
+      api_key: process.env.STRIPE_API_KEY,
+      webhook_secret: process.env.STRIPE_WEBHOOK_SECRET,
+      capture: true,
     },
   },
   {

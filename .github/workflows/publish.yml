@@ -36,7 +36,9 @@ jobs:
 
       - name: Publish to npm
         run: |
-          npm config set //registry.npmjs.org/:_authToken ${NPM_SECRET}
+          npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
           npm publish --access public
         env:
-          NPM_SECRET: ${{ secrets.NPM_SECRET }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    release:
+      name: '$TAG'
