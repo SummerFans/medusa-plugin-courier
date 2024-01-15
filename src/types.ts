@@ -4,6 +4,7 @@ const PROVIDER_ID = "push-notification";
 
 type Options = {
   auth_token:string;
+  store_name: string;
   store_url: string;
   template: {
     [key: string]: {

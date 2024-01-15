@@ -32,10 +32,11 @@ class EventBusProvider {
     // building a provider SDK
     if (!options.auth_token) {
       // AUTH_TOKEN
-      new Error("Courier plugin AUTH_TOKEN is required");
+      new Error("Courier plugin auth_token is required");
     }
+
     this.courierClient_ = new CourierClient({
-      authorizationToken: options.AUTH_TOKEN,
+      authorizationToken: options.auth_token,
     }); // get from the Courier UI
   }
 
@@ -68,19 +69,11 @@ class EventBusProvider {
 
   // TODO: resend event handle
   async resendEventHandle(to: string, data: any): Promise<EventBusResponse> {
-    this.courierClient_.send({
-      message: {
-        to: {
-          data: data,
-          email: to,
-        },
-        content: data.content,
-        routing: {
-          method: "single",
-          channels: ["email"],
-        },
-      },
-    });
+
+    // change the receiver
+    data.message.to.email = to;
+
+    this.courierClient_.send(data.message);
 
     return {
       to: to,
@@ -104,6 +97,13 @@ class PushNotificationService extends AbstractNotificationService {
     super(container);
     this.logger_ = container.logger;
     this.options_ = options;
+
+    this.options_.store_name = "VLL.APP";
+    this.options_.store_url = "http://localhost:8000";
+    this.options_.auth_token = "pk_test_BV9E84YFT242WBPBYYBPY10BEK5H";
+    this.options_.template = {
+        "order.placed": "RT67R871X4M3Y9NRV1JS1CB1DXNR"
+    }
 
     this.eventBusProvider = new EventBusProvider(container, this.options_);
 
