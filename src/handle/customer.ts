@@ -37,7 +37,6 @@ customerEventBus[CustomerService.Events.CREATED] = async function customerCreate
         },
       },
     });
-
   } catch (e) {
     return {
       to: customer.email,

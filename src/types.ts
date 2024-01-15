@@ -2,6 +2,16 @@ import { Courier, CourierClient } from "@trycourier/courier";
 
 const PROVIDER_ID = "push-notification";
 
+type Options = {
+  auth_token:string;
+  store_url: string;
+  template: {
+    [key: string]: {
+      [key in TemplateLocale]: string;
+    } | string;
+  };
+};
+
 enum TemplateLocale {
   EN_US = "en-US",
   ZH_CN = "zh-CN",
@@ -12,7 +22,7 @@ type EventBusFunction = (
   container: any,
   data: any,
   client: CourierClient,
-  options: any,
+  options: Options,
   template: TemplateFunction
 ) => Promise<{}>;
 type EventBusResponse = {
@@ -21,16 +31,9 @@ type EventBusResponse = {
   data: Record<string, unknown>;
 };
 
-type TemplateFunction = (locale: TemplateLocale) => Promise<Courier.Content>;  // define template function
+type TemplateFunction = (locale: TemplateLocale, options: Options) => Promise<Courier.Content>;  // define template function
 
-type Options = {
-  auth_token:string;
-  template: {
-    [key: string]: {
-      [key in TemplateLocale]: string;
-    } | string;
-  };
-};
+
 
 export {
   PROVIDER_ID,

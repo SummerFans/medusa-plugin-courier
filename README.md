@@ -31,6 +31,7 @@ medusa-config.js
     resolve: "medusa-plugin-courier",
     options: {
         auth_token: "xxxxx",
+        store_url: process.env.FONT_URL || "http://localhost:8000",
         template: {
             "order.created": {
                 "en-US": "xxxxx",
@@ -46,8 +47,11 @@ OR
     resolve: "medusa-plugin-courier",
     options: {
         auth_token: "xxxxx",
+        store_url: process.env.FONT_URL || "http://localhost:8000",
         template: {
             "order.created": "xxx"
         }
 }
 ```
+
+## Event List

@@ -24,6 +24,7 @@ orderEventBus[OrderService.Events.PLACED] = async (
     customer = await customerService.retrieve(order.customer_id);
 
     template_data = {
+      id: order.id,
       display_id: order.display_id,
       first_name: customer.first_name,
       last_name: customer.last_name,
@@ -89,7 +90,7 @@ orderEventBus[OrderService.Events.PLACED] = async (
             email: order.email,
           },
           // ! data.locale is null
-          content: await templateVal(data.locale || TemplateLocale.EN_US),
+          content: await templateVal(data.locale || TemplateLocale.EN_US, options),
           routing: {
             method: "single",
             channels: ["email"],
