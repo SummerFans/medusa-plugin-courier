@@ -33,7 +33,7 @@ customerEventBus[CustomerService.Events.CREATED] =
         id: data.id,
       };
 
-      // 如果option存在templateId，那么就用templateId
+      // If option exists templateId, then use templateId
       if (
         options.template &&
         options.template[CustomerService.Events.CREATED]
@@ -47,7 +47,7 @@ customerEventBus[CustomerService.Events.CREATED] =
                 data: template_data,
                 email: customer.email,
               },
-              // ! 这里的templateId需要在Courier的UI中创建
+              // ! The templateId here needs to be created in Courier's UI
               template: options.template[
                 CustomerService.Events.CREATED
               ] as string,

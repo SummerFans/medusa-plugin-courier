@@ -2,7 +2,7 @@ import { Logger, AbstractNotificationService } from "@medusajs/medusa";
 import { EntityManager } from "typeorm";
 import { CourierClient } from "@trycourier/courier";
 
-import { PROVIDER_ID, EventBusResponse, EventBusFunction, TemplateFunction } from "../types";
+import { PROVIDER_ID, EventBusResponse, EventBusFunction, TemplateFunction, Options } from "../types";
 
 // TemplateLocale
 import orderTemplates from "../templates/order";
@@ -11,7 +11,6 @@ import customerTemplates from "../templates/customer";
 // EventBus
 import orderEventBus from "../handle/order";
 import customerEventBus from "../handle/customer";
-
 
 
 class EventBusProvider {
@@ -93,17 +92,10 @@ class PushNotificationService extends AbstractNotificationService {
   protected options_: any;
   protected eventBusProvider: EventBusProvider;
 
-  constructor(container, options) {
+  constructor(container, options: Options) {
     super(container);
     this.logger_ = container.logger;
     this.options_ = options;
-
-    this.options_.store_name = "VLL.APP";
-    this.options_.store_url = "http://localhost:8000";
-    this.options_.auth_token = "pk_test_BV9E84YFT242WBPBYYBPY10BEK5H";
-    this.options_.template = {
-        "order.placed": "RT67R871X4M3Y9NRV1JS1CB1DXNR"
-    }
 
     this.eventBusProvider = new EventBusProvider(container, this.options_);
 

@@ -54,7 +54,7 @@ orderEventBus[OrderService.Events.PLACED] = async (
       }),
     };
 
-    // 如果option存在templateId，那么就用templateId
+    // If option exists templateId, then use templateId
     if (options.template && options.template[OrderService.Events.PLACED]) {
       if (typeof options.template[OrderService.Events.PLACED] === "string") {
         courierOption = {
@@ -63,7 +63,7 @@ orderEventBus[OrderService.Events.PLACED] = async (
               data: template_data,
               email: order.email,
             },
-            // ! 这里的templateId需要在Courier的UI中创建
+            // ! The templateId here needs to be created in Courier's UI
             template: options.template[OrderService.Events.PLACED] as string,
             routing: {
               method: "single",

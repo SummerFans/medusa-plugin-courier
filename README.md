@@ -13,7 +13,7 @@
   </a>
 </p>
 <h1 align="center">
-  Medusa Plugin Courier Notification
+  Medusa Plugin <a target="_blank" href="https://www.courier.com">Courier</a> Notification
 </h1>
 
 <p align="center">
@@ -30,12 +30,16 @@ medusa-config.js
 {
     resolve: "medusa-plugin-courier",
     options: {
+        store_name: "xxx",
         auth_token: "xxxxx",
-        store_url: process.env.FONT_URL || "http://localhost:8000",
+        store_url: process.env.STOREFRONT_URL || "http://localhost:8000",
         template: {
-            "order.created": "xxx"
+            "order.placed": "xxx"
         }
+    }
 }
 ```
 
 ## Event List
+- order.placed
+- customer.created
