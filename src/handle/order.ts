@@ -110,8 +110,6 @@ orderEventBus[OrderService.Events.PLACED] = async (
       };
     }
     const send = await client.send(courierOption);
-
-    
     logger.debug(`notification push success, orderId: ${data.id} sentId: ${send.requestId}`);
 
   } catch (e) {

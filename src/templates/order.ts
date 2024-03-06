@@ -41,26 +41,38 @@ orderTemplates[OrderService.Events.PLACED] = async (
             loop: "data.items",
             elements: [
               {
-                type: "text",
-                content: "{{$.item.title}}({{$.item.quantity}}x) - {{$.item.total}}",
-                align: "left",
-              },
-              {
                 type: "image",
                 src: "{{$.item.thumbnail}}",
                 width: "50px",
-                align: "left",
+                align: "right",
                 altText: "{{$.item.title}}",
               },
               {
-                type: "divider",
-                color: "#eeeeee",
+                type: "text",
+                content: "{{$.item.title}}",
+                align: "left",
+              },
+              {
+                type: "text",
+                content: "{{$.item.description}}",
+                align: "left",
+                text_style: "subtext",
+              },
+              {
+                type: "text",
+                content: "{{$.item.unit_price}}{{currency_code}} x {{$.item.quantity}}",
+                align: "left",
+                text_style: "subtext",
               },
             ]
           },
           {
+            type: "divider",
+            color: "#eeeeee",
+          },
+          {
             type:"text",
-            content:"Subtotal: {{subtotal}} {{currency_code}} | Shipping: {{shipping_total}} {{currency_code}} | Taxes:{{tax_total}}{{currency_code}}",
+            content:"Subtotal: {{subtotal}} {{currency_code}} | Shipping: {{shipping_total}} {{currency_code}} | Taxes:{{tax_total}} {{currency_code}}",
             align:"right",
             text_style: "subtext",
           },
