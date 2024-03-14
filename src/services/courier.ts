@@ -2,20 +2,14 @@ import { Logger, AbstractNotificationService } from "@medusajs/medusa";
 import { EntityManager } from "typeorm";
 import { CourierClient } from "@trycourier/courier";
 
-import { PROVIDER_ID, EventBusResponse, EventBusFunction, TemplateFunction, Options } from "../types";
-
-// TemplateLocale
-import orderTemplates from "../templates/order";
-import customerTemplates from "../templates/customer";
+import { PROVIDER_ID, EventBusResponse, EventBusFunction, Options } from "../types";
 
 // EventBus
 import orderEventBus from "../handle/order";
 import customerEventBus from "../handle/customer";
 
-
 class EventBusProvider {
   private eventBus_: Map<string, Function> = new Map();
-  private templates_: Map<string, Function> = new Map();
 
   protected container_;
   protected logger_: Logger;
@@ -36,7 +30,7 @@ class EventBusProvider {
 
     this.courierClient_ = new CourierClient({
       authorizationToken: options.auth_token,
-    }); // get from the Courier UI
+    });
   }
 
   registerToEventBus(eventName: string, eventHandle: EventBusFunction): void {
@@ -49,10 +43,6 @@ class EventBusProvider {
     this.eventBus_.set(eventName, eventHandle);
   }
 
-  registerToTemplate(eventName: string, templateHandle: TemplateFunction) {
-    return this.templates_.set(eventName, templateHandle);
-  }
-
   // TODO: add event handle
   async eventHandle(eventName: string, data: any): Promise<EventBusResponse> {
     return this.eventBus_.has(eventName)
@@ -60,15 +50,13 @@ class EventBusProvider {
           this.container_,
           data,
           this.courierClient_,
-          this.options_,
-          this.templates_.get(eventName)
+          this.options_
         )
       : null;
   }
 
   // TODO: resend event handle
   async resendEventHandle(to: string, data: any): Promise<EventBusResponse> {
-
     // change the receiver
     data.message.to.email = to;
 
@@ -106,7 +94,6 @@ class PushNotificationService extends AbstractNotificationService {
     ][]) {
       // order event
       this.eventBusProvider.registerToEventBus(eventName, handle);                    // register event handle
-      this.eventBusProvider.registerToTemplate(eventName, orderTemplates[eventName]); // register default template
     }
 
     // TODO: add customer event bus
@@ -115,7 +102,6 @@ class PushNotificationService extends AbstractNotificationService {
       EventBusFunction
     ][]) {
       this.eventBusProvider.registerToEventBus(eventName, handle);                    // register event handle
-      this.eventBusProvider.registerToTemplate(eventName, customerTemplates[eventName]); // register default template
     }
   }
 

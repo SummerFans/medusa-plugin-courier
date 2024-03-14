@@ -19,9 +19,7 @@
 <p align="center">
   Medusa notification plugin template provided
 </p>
-<p>
-The Courier plugin is a simple notification plugin that currently only supports email notifications. 
-</p>
+<p>The Courier plugin is a simple notification plugin that currently only supports email notifications. </p>
 
 ## ENV
 ```
@@ -59,7 +57,7 @@ medusa-config.js
 
 ### Customer Event
 - [x] [customer.created](#CUSTOMER.CREATED)
-- [ ] [customer.passwored_reset](#CUSTOMER.PASSWORED_RESET)
+- [x] [customer.passwored_reset](#CUSTOMER.PASSWORED_RESET)
 
 ## Template variables
 ### ORDER.PLACED
